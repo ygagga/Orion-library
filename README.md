@@ -1,4 +1,3 @@
--- Iniciar a biblioteca Orion
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 
 -- Criando a janela principal da interface
@@ -9,149 +8,48 @@ local Window = OrionLib:MakeWindow({
     ConfigFolder = "TrollHubConfig"
 })
 
--- Funções auxiliares
-
--- Função para trocar a cabeça do avatar
-local function changeAvatar(id, notificationTitle)
-    local argsTable = (type(id) == "table") and id or {1, 1, 1, 1, 1, id}
-
-    local args = {
-        [1] = "CharacterChange",
-        [2] = argsTable,
-        [3] = "🔥 Troll Hub 💀"
-    }
-
-    local replicatedStorage = game:GetService("ReplicatedStorage")
-    local starterGui = game:GetService("StarterGui")
-
-    if replicatedStorage and starterGui then
-        local remote = replicatedStorage.RE:FindFirstChild("1Avata1rOrigina1l")
-        if remote then
-            remote:FireServer(unpack(args))
-            starterGui:SetCore("SendNotification", {
-                Title = notificationTitle,
-                Text = "Aguarde 1-10 segundos...",
-                Duration = 5
-            })
-        end
-    end
-end
-
--- Controle de jogadores
-local selectedPlayer = ""
-local isSpectating = false
-
--- Função para teleportar todos os jogadores
-local function teleportAllPlayers()
-    local players = game:GetService("Players")
-    local localPlayer = players.LocalPlayer
-    local localHumanoidRootPart = localPlayer.Character:FindFirstChild("HumanoidRootPart")
-
-    if localHumanoidRootPart then
-        for _, targetPlayer in pairs(players:GetPlayers()) do
-            if targetPlayer.Character and targetPlayer ~= localPlayer then
-                local targetHumanoidRootPart = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-                if targetHumanoidRootPart then
-                    targetHumanoidRootPart.CFrame = localHumanoidRootPart.CFrame
-                end
-            end
-        end
-    end
-end
-
--- Função para espectar o jogador
-local function spectatePlayer(targetUsername)
-    local players = game:GetService("Players")
-    local localPlayer = players.LocalPlayer
-    local targetPlayer = players:FindFirstChild(targetUsername)
-
-    if targetPlayer and targetPlayer.Character then
-        local camera = game.Workspace.CurrentCamera
-        camera.CameraSubject = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
-        isSpectating = true
-    end
-end
-
--- Função para despectar
-local function despectatePlayer()
-    local players = game:GetService("Players")
-    local localPlayer = players.LocalPlayer
-    local camera = game.Workspace.CurrentCamera
-    camera.CameraSubject = localPlayer.Character:FindFirstChildOfClass("Humanoid")
-    isSpectating = false
-end
-
--- Hacks
-local speedActive = false
-local jumpActive = false
-local wallWalkActive = false
-
--- Função para ativar/desativar super velocidade
-local function toggleSpeed(active)
-    if active then
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
-    else
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-    end
-    speedActive = active
-end
-
--- Função para ativar/desativar pulo infinito
-local function toggleJump(active)
-    if active then
-        game:GetService("UserInputService").JumpRequest:Connect(function()
-            game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end)
-    else
-        game:GetService("UserInputService").JumpRequest:Disconnect()
-    end
-    jumpActive = active
-end
-
--- Função para ativar/desativar atravessar paredes
-local function toggleWallWalk(active)
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    local function enableWallWalk()
-        for _, part in pairs(character:GetChildren()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = not active
-            end
-        end
-    end
-    enableWallWalk()
-    wallWalkActive = active
-end
-
--- Função para tocar música para todos os jogadores
-local musicId = ""
-local loopMusic = false
-local musicPlaying = nil
-
-local function playMusicForAll(id, loop)
-    if musicPlaying then
-        musicPlaying:Stop()
-        musicPlaying:Destroy()
-    end
-
-    musicPlaying = Instance.new("Sound")
-    musicPlaying.SoundId = "rbxassetid://" .. id
-    musicPlaying.Looped = loop
-    musicPlaying.Volume = 1
-    musicPlaying.Parent = game:GetService("Workspace")
-    musicPlaying:Play()
-end
-
 -----------------------------------------------------------
 -- Criando as Abas
 -----------------------------------------------------------
 
--- Trolls
+-- 👾 Troll
 local TrollTab = Window:MakeTab({
     Name = "Trolls",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
+
+-- 🎶 Música
+local MusicTab = Window:MakeTab({
+    Name = "Música",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- ⚡ Hacks
+local HacksTab = Window:MakeTab({
+    Name = "Hacks",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- 🧑‍💻 Scripts
+local ScriptsTab = Window:MakeTab({
+    Name = "Scripts",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- ℹ️ Sobre
+local AboutTab = Window:MakeTab({
+    Name = "Sobre",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-----------------------------------------------------------
+-- Funções de Troll
+-----------------------------------------------------------
 
 TrollTab:AddSection("Controle de Jogadores")
 
@@ -193,14 +91,8 @@ TrollTab:AddButton({
 })
 
 -----------------------------------------------------------
--- Música
+-- Funções de Música
 -----------------------------------------------------------
-
-local MusicTab = Window:MakeTab({
-    Name = "Música",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
 
 MusicTab:AddSection("Reproduzir Música para Todos")
 
@@ -234,14 +126,8 @@ MusicTab:AddButton({
 })
 
 -----------------------------------------------------------
--- Hacks
+-- Funções de Hacks
 -----------------------------------------------------------
-
-local HacksTab = Window:MakeTab({
-    Name = "Hacks",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
 
 HacksTab:AddSection("Superpoderes!")
 
@@ -297,12 +183,6 @@ HacksTab:AddButton({
 -- Scripts
 -----------------------------------------------------------
 
-local ScriptsTab = Window:MakeTab({
-    Name = "Scripts",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
 ScriptsTab:AddSection("Carregar Scripts")
 
 ScriptsTab:AddButton({
@@ -333,15 +213,13 @@ ScriptsTab:AddButton({
 -- Sobre
 -----------------------------------------------------------
 
-local AboutTab = Window:MakeTab({
-    Name = "Sobre",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
 AboutTab:AddSection("Informações do Criador")
 
 AboutTab:AddParagraph("Criado por Shelby, Discord: snobodj")
 AboutTab:AddParagraph("Criado para bagunçar no Brookhaven RP! Aproveite e divirta-se, mas sem exagerar! 😆")
 
-    
+-----------------------------------------------------------
+-- Finalizando a interface
+-----------------------------------------------------------
+
+OrionLib:Init()
