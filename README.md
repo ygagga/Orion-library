@@ -1,291 +1,53 @@
--- Carrega a biblioteca Orion
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/yaoclub/Orion/master/OrionLib.lua"))()
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 
--- Criando a Janela da Interface
+-- Criando a janela
 local Window = OrionLib:MakeWindow({
-    Name = "Brookhaven RP 🏡 (Troll Hub 🤡)",
+    Name = "Exemplo de Interface",
     HidePremium = false,
-    IntroEnabled = true,
-    SaveConfig = true
+    SaveConfig = true,
+    ConfigFolder = "ExemploConfig"
 })
 
------------------------------------------------------------
--- 🤡 Troll (Controle de Jogadores)
------------------------------------------------------------
-local TrollTab = Window:MakeTab({
-    Name = "🤡 Troll",
+-- Criando as Tabs
+local Tab1 = Window:MakeTab({
+    Name = "Trolls",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
 
-TrollTab:AddSection({
-    Name = "Controle de Jogadores"
-})
-
-local selectedPlayer = ""
-
--- Campo de entrada para o nome do jogador
-TrollTab:AddTextbox({
-    Name = "Nome do Jogador",
-    Default = "",
-    TextDisappear = true,
-    Callback = function(value)
-        selectedPlayer = value
-    end
-})
-
--- Função para teleportar todos os jogadores para o local do jogador que executou o comando
-local function teleportAllPlayers()
-    local players = game:GetService("Players")
-    local localPlayer = players.LocalPlayer
-    local localHumanoidRootPart = localPlayer.Character:FindFirstChild("HumanoidRootPart")
-
-    if localHumanoidRootPart then
-        -- Teleportando todos os jogadores para a posição do jogador atual
-        for _, targetPlayer in pairs(players:GetPlayers()) do
-            if targetPlayer.Character and targetPlayer ~= localPlayer then
-                local targetHumanoidRootPart = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-                if targetHumanoidRootPart then
-                    targetHumanoidRootPart.CFrame = localHumanoidRootPart.CFrame
-                end
-            end
-        end
-    end
-end
-
--- Função para espectar o jogador
-local function spectatePlayer(targetUsername)
-    local players = game:GetService("Players")
-    local localPlayer = players.LocalPlayer
-    local targetPlayer = players:FindFirstChild(targetUsername)
-
-    if targetPlayer and targetPlayer.Character then
-        local camera = game.Workspace.CurrentCamera
-        camera.CameraSubject = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
-    end
-end
-
--- Botão para teleportar todos os jogadores
-TrollTab:AddButton({
-    Name = "Teleportar Todos 🏃‍♂️",
-    Callback = function()
-        teleportAllPlayers()
-    end
-})
-
--- Botão para espectar o jogador
-TrollTab:AddButton({
-    Name = "Espectar 👀",
-    Callback = function()
-        if selectedPlayer ~= "" then
-            spectatePlayer(selectedPlayer)
-        end
-    end
-})
-
------------------------------------------------------------
--- 🎶 Música
------------------------------------------------------------
-local MusicTab = Window:MakeTab({
-    Name = "🎶 Música",
+local Tab2 = Window:MakeTab({
+    Name = "Admin",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
 
-local musicId = ""  -- ID da música a ser tocada
-local loopMusic = false  -- Controle de loop da música
-local musicPlaying = nil  -- Armazena o som que está tocando
-
--- Função para tocar música em loop para todos os jogadores
-local function playMusicForAll(id, loop)
-    -- Checa se já existe uma música tocando, e se sim, para ela
-    if musicPlaying then
-        musicPlaying:Stop()
-        musicPlaying:Destroy()
-    end
-
-    -- Cria um novo objeto de som no Workspace
-    musicPlaying = Instance.new("Sound")
-    musicPlaying.SoundId = "rbxassetid://" .. id
-    musicPlaying.Looped = loop
-    musicPlaying.Volume = 1  -- Volume máximo
-    musicPlaying.Parent = game:GetService("Workspace")  -- Coloca o som no Workspace, assim todos podem ouvir
-
-    musicPlaying:Play()
-end
-
--- Campo de entrada para o ID da música
-MusicTab:AddTextbox({
-    Name = "ID da Música",
-    Default = "",
-    TextDisappear = true,
-    Callback = function(value)
-        musicId = value
-    end
+-- Adicionando uma Section na Tab1
+local Section1 = Tab1:AddSection({
+    Name = "Funções de Troll"
 })
 
--- Campo de seleção para o loop da música
-MusicTab:AddToggle({
-    Name = "Loop",
-    Default = false,
-    Callback = function(value)
-        loopMusic = value
-    end
-})
-
--- Botão para iniciar a música para todos os jogadores
-MusicTab:AddButton({
-    Name = "Reproduzir Música 🎶",
+-- Adicionando um botão na Section1
+Section1:AddButton({
+    Name = "Matar Jogador",
     Callback = function()
-        if musicId ~= "" then
-            playMusicForAll(musicId, loopMusic)
-        end
+        -- Ação para matar o jogador
+        print("Jogador Morto!")
     end
 })
 
------------------------------------------------------------
--- ⚡ Hacks (Velocidade + Pulo Infinito + Atravessar Paredes)
------------------------------------------------------------
-local HacksTab = Window:MakeTab({
-    Name = "⚡ Hacks",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
+-- Adicionando outra Section na Tab2
+local Section2 = Tab2:AddSection({
+    Name = "Funções de Admin"
 })
 
-local speedActive = false
-local jumpActive = false
-local wallWalkActive = false
-
-HacksTab:AddSection({
-    Name = "Superpoderes!"
-})
-
--- Velocidade infinita
-HacksTab:AddButton({
-    Name = "Ativar Super Velocidade ⚡",
+-- Adicionando um botão na Section2
+Section2:AddButton({
+    Name = "Teleportar Jogador",
     Callback = function()
-        speedActive = true
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
+        -- Ação para teleportar o jogador
+        print("Jogador Teleportado!")
     end
 })
 
--- Desativar Velocidade
-HacksTab:AddButton({
-    Name = "Desativar Velocidade ❌",
-    Callback = function()
-        speedActive = false
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-    end
-})
-
--- Pulo infinito
-HacksTab:AddButton({
-    Name = "Ativar Pulo Infinito 🦘",
-    Callback = function()
-        jumpActive = true
-        game:GetService("UserInputService").JumpRequest:Connect(function()
-            game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end)
-    end
-})
-
--- Desativar Pulo Infinito
-HacksTab:AddButton({
-    Name = "Desativar Pulo Infinito ❌",
-    Callback = function()
-        jumpActive = false
-        -- Desconectar a função de pulo infinito
-        game:GetService("UserInputService").JumpRequest:Disconnect()
-    end
-})
-
--- Atravessar Paredes
-HacksTab:AddButton({
-    Name = "Ativar Atravessar Paredes 🚪",
-    Callback = function()
-        wallWalkActive = true
-        local player = game.Players.LocalPlayer
-        local character = player.Character
-        local humanoid = character:WaitForChild("Humanoid")
-
-        local function enableWallWalk()
-            for _, part in pairs(character:GetChildren()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
-                end
-            end
-        end
-
-        enableWallWalk()
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Poder Ativado!",
-            Text = "Você agora pode atravessar paredes! 🚪",
-            Duration = 5
-        })
-    end
-})
-
--- Desativar Atravessar Paredes
-HacksTab:AddButton({
-    Name = "Desativar Atravessar Paredes ❌",
-    Callback = function()
-        wallWalkActive = false
-        local player = game.Players.LocalPlayer
-        local character = player.Character
-
-        local function disableWallWalk()
-            for _, part in pairs(character:GetChildren()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = true
-                end
-            end
-        end
-
-        disableWallWalk()
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Poder Desativado",
-            Text = "Você não pode mais atravessar paredes.",
-            Duration = 5
-        })
-    end
-})
-
------------------------------------------------------------
--- 🧑‍💻 Scripts
------------------------------------------------------------
-local ScriptsTab = Window:MakeTab({
-    Name = "🧑‍💻 Scripts",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
--- Adiciona os scripts na aba Scripts
-ScriptsTab:AddSection({
-    Name = "Carregar Scripts"
-})
-
--- Botões para carregar os scripts
-ScriptsTab:AddButton({
-    Name = "Fly Script ✈️",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-    end
-})
-
-ScriptsTab:AddButton({
-    Name = "RAEL Hub 🔧",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Laelmano24/Rael-Hub/main/main.txt"))()
-    end
-})
-
-ScriptsTab:AddButton({
-    Name = "Sander X 🛸",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/sXPiterXs1111/Sanderxv3.30/main/sanderx3.30'))()
-    end
-})
-
------------------------------------------------------------
--- Fechar a interface
+-- Finalizando a interface
 OrionLib:Init()
