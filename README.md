@@ -1,159 +1,339 @@
--- Carregar a Orion Library
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/jensonhirst/Orion/main/source"))()
+-- Carrega a biblioteca Orion
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/yaoclub/Orion/master/OrionLib.lua"))()
 
--- Criar a Janela Principal
+-- Criando a Janela da Interface
 local Window = OrionLib:MakeWindow({
-    Name = "Troll Hub 🤡",
+    Name = "Brookhaven RP 🏡 (Troll Hub 🤡)",
     HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "TrollHubConfig"
+    IntroEnabled = true,
+    SaveConfig = true
 })
 
--- Criar uma Aba Principal
+-- Função para trocar a cabeça do avatar
+local function changeAvatar(id, notificationTitle)
+    local argsTable = (type(id) == "table") and id or {1, 1, 1, 1, 1, id}
+
+    local args = {
+        [1] = "CharacterChange",
+        [2] = argsTable,
+        [3] = "🔥 Troll Hub 💀"
+    }
+
+    local replicatedStorage = game:GetService("ReplicatedStorage")
+    local starterGui = game:GetService("StarterGui")
+
+    if replicatedStorage and starterGui then
+        local remote = replicatedStorage.RE:FindFirstChild("1Avata1rOrigina1l")
+        if remote then
+            remote:FireServer(unpack(args))
+            starterGui:SetCore("SendNotification", {
+                Title = notificationTitle,
+                Text = "Aguarde 1-10 segundos...",
+                Duration = 5
+            })
+        end
+    end
+end
+
+-----------------------------------------------------------
+-- 🤡 Troll (ESP)
+-----------------------------------------------------------
 local TrollTab = Window:MakeTab({
-    Name = "Troll Options",
+    Name = "🤡 Troll",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
 
--- Seção do Menu de Troll
-local TrollSection = TrollTab:AddSection({
-    Name = "Funções de Troll"
+-- Adiciona uma seção para controle de jogadores na aba Troll
+TrollTab:AddSection({
+    Name = "Controle de Jogadores"
 })
 
--- Botão para Lagar o Servidor
-TrollTab:AddButton({
-    Name = "Lagar o Servidor",
-    Callback = function()
-        while true do
-            game:GetService("RunService").Heartbeat:Wait()
-        end
-    end
-})
+local selectedPlayer = ""
+local isSpectating = false  -- Variável para controlar o espectar
 
--- Botão para Aumentar a Velocidade do Jogador
-TrollTab:AddButton({
-    Name = "Super Velocidade ⚡",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        if player.Character then
-            player.Character.Humanoid.WalkSpeed = 100
-        end
-    end
-})
-
--- Botão para Spawnar um Sofá Matador
-TrollTab:AddButton({
-    Name = "Spawnar Sofá Matador ☠️",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        local char = player.Character
-        if char then
-            local sofa = Instance.new("Part", workspace)
-            sofa.Size = Vector3.new(5, 1, 3)
-            sofa.Position = char.HumanoidRootPart.Position
-            sofa.Touched:Connect(function(hit)
-                if hit.Parent:FindFirstChild("Humanoid") then
-                    hit.Parent.Humanoid.Health = 0
-                end
-            end)
-        end
-    end
-})
-
--- Botão para Teleportar um Jogador para sua Casa
-TrollTab:AddButton({
-    Name = "Trazer Jogador para sua Casa 🏠",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        local char = player.Character
-        if char then
-            for _, p in pairs(game.Players:GetPlayers()) do
-                if p ~= player and p.Character then
-                    p.Character.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame
-                end
-            end
-        end
-    end
-})
-
--- Botão para Copiar Skin de Outro Jogador
-TrollTab:AddButton({
-    Name = "Copiar Skin de Alguém 🎭",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        if SelectedPlayer then
-            local target = game.Players:FindFirstChild(SelectedPlayer)
-            if target and target.Character then
-                local char = player.Character
-                for _, item in pairs(target.Character:GetChildren()) do
-                    if item:IsA("Accessory") or item:IsA("Clothing") then
-                        item:Clone().Parent = char
-                    end
-                end
-            end
-        end
-    end
-})
-
--- Criar Dropdown para Selecionar um Jogador
-local SelectedPlayer = nil
-TrollTab:AddDropdown({
-    Name = "Selecionar Jogador 🎯",
-    Default = "Nenhum",
-    Options = {},
+-- Campo de entrada para o nome do jogador
+TrollTab:AddTextbox({
+    Name = "Nome do Jogador",
+    Default = "",
+    TextDisappear = true,
     Callback = function(value)
-        SelectedPlayer = value
+        selectedPlayer = value
     end
 })
 
--- Atualizar a Lista de Jogadores
-local function UpdatePlayers()
-    local playersList = {}
-    for _, player in pairs(game.Players:GetPlayers()) do
-        table.insert(playersList, player.Name)
+-- Função para teleportar todos os jogadores para o local do jogador que executou o comando
+local function teleportAllPlayers()
+    local players = game:GetService("Players")
+    local localPlayer = players.LocalPlayer
+    local localHumanoidRootPart = localPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+    if localHumanoidRootPart then
+        -- Teleportando todos os jogadores para a posição do jogador atual
+        for _, targetPlayer in pairs(players:GetPlayers()) do
+            if targetPlayer.Character and targetPlayer ~= localPlayer then
+                local targetHumanoidRootPart = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if targetHumanoidRootPart then
+                    targetHumanoidRootPart.CFrame = localHumanoidRootPart.CFrame
+                end
+            end
+        end
     end
-    TrollTab:RefreshDropdown({
-        Name = "Selecionar Jogador 🎯",
-        Options = playersList,
-    })
 end
 
--- Atualiza a lista automaticamente quando um jogador entra ou sai
-game.Players.PlayerAdded:Connect(UpdatePlayers)
-game.Players.PlayerRemoving:Connect(UpdatePlayers)
-UpdatePlayers()
+-- Função para espectar o jogador
+local function spectatePlayer(targetUsername)
+    local players = game:GetService("Players")
+    local localPlayer = players.LocalPlayer
+    local targetPlayer = players:FindFirstChild(targetUsername)
 
--- Botão para Teleportar Jogador Selecionado
+    if targetPlayer and targetPlayer.Character then
+        local camera = game.Workspace.CurrentCamera
+        camera.CameraSubject = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
+        isSpectating = true
+    end
+end
+
+-- Função para despectar (retornar a câmera para o jogador original)
+local function despectatePlayer()
+    local players = game:GetService("Players")
+    local localPlayer = players.LocalPlayer
+    local camera = game.Workspace.CurrentCamera
+    camera.CameraSubject = localPlayer.Character:FindFirstChildOfClass("Humanoid")
+    isSpectating = false
+end
+
+-- Botão para teleportar todos os jogadores para o jogador
 TrollTab:AddButton({
-    Name = "Teleportar Jogador Selecionado ✨",
+    Name = "Teleportar Todos 🏃‍♂️",
     Callback = function()
-        if SelectedPlayer then
-            local localPlayer = game.Players.LocalPlayer
-            local target = game.Players:FindFirstChild(SelectedPlayer)
-            if target and target.Character and localPlayer.Character then
-                local myHRP = localPlayer.Character:FindFirstChild("HumanoidRootPart")
-                local targetHRP = target.Character:FindFirstChild("HumanoidRootPart")
-                if myHRP and targetHRP then
-                    targetHRP.CFrame = myHRP.CFrame
+        teleportAllPlayers()
+    end
+})
+
+-- Botão para espectar o jogador
+TrollTab:AddButton({
+    Name = "Espectar 👀",
+    Callback = function()
+        if selectedPlayer ~= "" then
+            spectatePlayer(selectedPlayer)
+        end
+    end
+})
+
+-- Botão para despectar (voltar para o jogador original)
+TrollTab:AddButton({
+    Name = "Despectar 🚶‍♂️",
+    Callback = function()
+        if isSpectating then
+            despectatePlayer()
+        end
+    end
+})
+
+-----------------------------------------------------------
+-- 🎶 Música
+-----------------------------------------------------------
+local MusicTab = Window:MakeTab({
+    Name = "🎶 Música",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local musicId = ""  -- ID da música a ser tocada
+local loopMusic = false  -- Controle de loop da música
+local musicPlaying = nil  -- Armazena o som que está tocando
+
+-- Função para tocar música em loop para todos os jogadores
+local function playMusicForAll(id, loop)
+    -- Checa se já existe uma música tocando, e se sim, para ela
+    if musicPlaying then
+        musicPlaying:Stop()
+        musicPlaying:Destroy()
+    end
+
+    -- Cria um novo objeto de som no Workspace
+    musicPlaying = Instance.new("Sound")
+    musicPlaying.SoundId = "rbxassetid://" .. id
+    musicPlaying.Looped = loop
+    musicPlaying.Volume = 1  -- Volume máximo
+    musicPlaying.Parent = game:GetService("Workspace")  -- Coloca o som no Workspace, assim todos podem ouvir
+
+    musicPlaying:Play()
+end
+
+-- Campo de entrada para o ID da música
+MusicTab:AddTextbox({
+    Name = "ID da Música",
+    Default = "",
+    TextDisappear = true,
+    Callback = function(value)
+        musicId = value
+    end
+})
+
+-- Campo de seleção para o loop da música
+MusicTab:AddToggle({
+    Name = "Loop",
+    Default = false,
+    Callback = function(value)
+        loopMusic = value
+    end
+})
+
+-- Botão para iniciar a música para todos os jogadores
+MusicTab:AddButton({
+    Name = "Reproduzir Música 🎶",
+    Callback = function()
+        if musicId ~= "" then
+            playMusicForAll(musicId, loopMusic)
+        end
+    end
+})
+
+-----------------------------------------------------------
+-- ⚡ Hacks (Velocidade + Pulo Infinito + Atravessar Paredes)
+-----------------------------------------------------------
+local HacksTab = Window:MakeTab({
+    Name = "⚡ Hacks",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local speedActive = false
+local jumpActive = false
+local wallWalkActive = false
+
+HacksTab:AddSection({
+    Name = "Superpoderes!"
+})
+
+-- Velocidade infinita
+HacksTab:AddButton({
+    Name = "Ativar Super Velocidade ⚡",
+    Callback = function()
+        speedActive = true
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
+    end
+})
+
+-- Desativar Velocidade
+HacksTab:AddButton({
+    Name = "Desativar Velocidade ❌",
+    Callback = function()
+        speedActive = false
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+    end
+})
+
+-- Pulo infinito
+HacksTab:AddButton({
+    Name = "Ativar Pulo Infinito 🦘",
+    Callback = function()
+        jumpActive = true
+        game:GetService("UserInputService").JumpRequest:Connect(function()
+            game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end)
+    end
+})
+
+-- Desativar Pulo Infinito
+HacksTab:AddButton({
+    Name = "Desativar Pulo Infinito ❌",
+    Callback = function()
+        jumpActive = false
+        -- Desconectar a função de pulo infinito
+        game:GetService("UserInputService").JumpRequest:Disconnect()
+    end
+})
+
+-- Atravessar Paredes
+HacksTab:AddButton({
+    Name = "Ativar Atravessar Paredes 🚪",
+    Callback = function()
+        wallWalkActive = true
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        local humanoid = character:WaitForChild("Humanoid")
+
+        local function enableWallWalk()
+            for _, part in pairs(character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
                 end
             end
         end
+
+        enableWallWalk()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Poder Ativado!",
+            Text = "Você agora pode atravessar paredes! 🚪",
+            Duration = 5
+        })
     end
 })
 
--- Botão para Matar o Jogador Selecionado
-TrollTab:AddButton({
-    Name = "Matar Jogador Selecionado 💀",
+-- Desativar Atravessar Paredes
+HacksTab:AddButton({
+    Name = "Desativar Atravessar Paredes ❌",
     Callback = function()
-        if SelectedPlayer then
-            local target = game.Players:FindFirstChild(SelectedPlayer)
-            if target and target.Character and target.Character:FindFirstChild("Humanoid") then
-                target.Character.Humanoid.Health = 0
+        wallWalkActive = false
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+
+        local function disableWallWalk()
+            for _, part in pairs(character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
             end
         end
+
+        disableWallWalk()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Poder Desativado",
+            Text = "Você não pode mais atravessar paredes.",
+            Duration = 5
+        })
     end
 })
 
--- Finalizar a Interface
+-----------------------------------------------------------
+-- 🧑‍💻 Scripts
+-----------------------------------------------------------
+local ScriptsTab = Window:MakeTab({
+    Name = "🧑‍💻 Scripts",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Adiciona os scripts na aba Scripts
+ScriptsTab:AddSection({
+    Name = "Carregar Scripts"
+})
+
+-- Botões para carregar os scripts
+ScriptsTab:AddButton({
+    Name = "Fly Script ✈️",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+    end
+})
+
+ScriptsTab:AddButton({
+    Name = "RAEL Hub 🔧",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Laelmano24/Rael-Hub/main/main.txt"))()
+    end
+})
+
+ScriptsTab:AddButton({
+    Name = "Sander X 🛸",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/sXPiterXs1111/Sanderxv3.30/main/sanderx3.30'))()
+    end
+})
+
+-----------------------------------------------------------
+-- Fechar a interface
 OrionLib:Init()
