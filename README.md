@@ -40,14 +40,14 @@ local Tabs = {
 -----------------------------------------------------------
 -- 🤡 Troll
 -----------------------------------------------------------
-Tabs.Troll:AddSection({
+TabTroll:AddSection({
     Name = "Controle de Jogadores"
 })
 
 local selectedPlayer = ""
 local isSpectating = false
 
-Tabs.Troll:AddInput({
+TabTroll:AddInput({
     Name = "Nome do Jogador",
     Default = "",
     Placeholder = "Digite o nome do jogador",
@@ -97,7 +97,7 @@ local function despectatePlayer()
     isSpectating = false
 end
 
-Tabs.Troll:AddButton({
+TabTroll:AddButton({
     Name = "Teleportar Todos 🏃‍♂️",
     Description = "Teleporta todos os jogadores para você!",
     Callback = function()
@@ -115,7 +115,7 @@ Tabs.Troll:AddButton({
     end
 })
 
-Tabs.Troll:AddButton({
+TabTroll:AddButton({
     Name = "Despectar 🚶‍♂️",
     Description = "Volte para o seu personagem!",
     Callback = function()
@@ -128,7 +128,7 @@ Tabs.Troll:AddButton({
 -----------------------------------------------------------
 -- 🎶 Música
 -----------------------------------------------------------
-Tabs.Music:AddSection({
+TabMusic:AddSection({
     Name = "Reproduzir Música para Todos"
 })
 
@@ -154,7 +154,7 @@ local function playMusicForAll(id, loop)
     musicPlaying:Play()
 end
 
-Tabs.Music:AddInput({
+TabMusic:AddInput({
     Name = "ID da Música",
     Default = "",
     Placeholder = "Digite o ID da música",
@@ -165,7 +165,7 @@ Tabs.Music:AddInput({
     end
 })
 
-Tabs.Music:AddToggle({
+TabMusic:AddToggle({
     Name = "Loop",
     Default = false,
     Callback = function(value)
@@ -173,7 +173,7 @@ Tabs.Music:AddToggle({
     end
 })
 
-Tabs.Music:AddButton({
+TabMusic:AddButton({
     Name = "Reproduzir Música 🎶",
     Description = "Reproduza a música para todos os jogadores.",
     Callback = function()
@@ -186,7 +186,7 @@ Tabs.Music:AddButton({
 -----------------------------------------------------------
 -- ⚡ Hacks
 -----------------------------------------------------------
-Tabs.Hacks:AddSection({
+TabHacks:AddSection({
     Name = "Superpoderes!"
 })
 
@@ -203,7 +203,7 @@ Tabs.Hacks:AddButton({
     end
 })
 
-Tabs.Hacks:AddButton({
+TabHacks:AddButton({
     Name = "Desativar Velocidade ❌",
     Description = "Desativa a Super Velocidade!",
     Callback = function()
@@ -212,7 +212,7 @@ Tabs.Hacks:AddButton({
     end
 })
 
-Tabs.Hacks:AddButton({
+TabHacks:AddButton({
     Name = "Ativar Pulo Infinito 🦘",
     Description = "Pule o quanto quiser sem limites!",
     Callback = function()
@@ -223,7 +223,7 @@ Tabs.Hacks:AddButton({
     end
 })
 
-Tabs.Hacks:AddButton({
+TabHacks:AddButton({
     Name = "Desativar Pulo Infinito ❌",
     Description = "Desativa o Pulo Infinito!",
     Callback = function()
@@ -232,7 +232,7 @@ Tabs.Hacks:AddButton({
     end
 })
 
-Tabs.Hacks:AddButton({
+TabHacks:AddButton({
     Name = "Ativar Atravessar Paredes 🚪",
     Description = "Agora você pode atravessar as paredes!",
     Callback = function()
@@ -254,7 +254,7 @@ Tabs.Hacks:AddButton({
     end
 })
 
-Tabs.Hacks:AddButton({
+TabHacks:AddButton({
     Name = "Desativar Atravessar Paredes ❌",
     Description = "Desativa o poder de atravessar paredes!",
     Callback = function()
@@ -278,11 +278,11 @@ Tabs.Hacks:AddButton({
 -----------------------------------------------------------
 -- 🧑‍💻 Scripts
 -----------------------------------------------------------
-Tabs.Scripts:AddSection({
+TabScripts:AddSection({
     Name = "Carregar Scripts"
 })
 
-Tabs.Scripts:AddButton({
+TabScripts:AddButton({
     Name = "Fly Script ✈️",
     Description = "Ativa o Fly script.",
     Callback = function()
@@ -290,7 +290,7 @@ Tabs.Scripts:AddButton({
     end
 })
 
-Tabs.Scripts:AddButton({
+TabScripts:AddButton({
     Name = "RAEL Hub 🔧",
     Description = "Carrega o RAEL Hub.",
     Callback = function()
@@ -298,7 +298,7 @@ Tabs.Scripts:AddButton({
     end
 })
 
-Tabs.Scripts:AddButton({
+TabScripts:AddButton({
     Name = "Sander X 🛸",
     Description = "Carrega o Sander X.",
     Callback = function()
@@ -309,12 +309,12 @@ Tabs.Scripts:AddButton({
 -----------------------------------------------------------
 -- ℹ️ Sobre
 -----------------------------------------------------------
-Tabs.About:AddSection({
+TabAbout:AddSection({
     Name = "Criado por Shelby"
 })
 
-Tabs.About:AddParagraph("Criado por Troll Hub para bagunçar no Brookhaven RP!")
-Tabs.About:AddParagraph("Aproveite e divirta-se, mas sem exagerar! 😆")
+TabAbout:AddParagraph("Criado por Troll Hub para bagunçar no Brookhaven RP!")
+TabAbout:AddParagraph("Aproveite e divirta-se, mas sem exagerar! 😆")
 
 -- Finalizando a Interface
 OrionLib:Init()
