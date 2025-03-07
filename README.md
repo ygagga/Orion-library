@@ -9,34 +9,8 @@ local Window = OrionLib:MakeWindow({
     SaveConfig = true
 })
 
--- Função para trocar a cabeça do avatar
-local function changeAvatar(id, notificationTitle)
-    local argsTable = (type(id) == "table") and id or {1, 1, 1, 1, 1, id}
-
-    local args = {
-        [1] = "CharacterChange",
-        [2] = argsTable,
-        [3] = "🔥 Troll Hub 💀"
-    }
-
-    local replicatedStorage = game:GetService("ReplicatedStorage")
-    local starterGui = game:GetService("StarterGui")
-
-    if replicatedStorage and starterGui then
-        local remote = replicatedStorage.RE:FindFirstChild("1Avata1rOrigina1l")
-        if remote then
-            remote:FireServer(unpack(args))
-            starterGui:SetCore("SendNotification", {
-                Title = notificationTitle,
-                Text = "Aguarde 1-10 segundos...",
-                Duration = 5
-            })
-        end
-    end
-end
-
 -----------------------------------------------------------
--- 🤡 Troll (ESP)
+-- 🤡 Troll (Controle de Jogadores)
 -----------------------------------------------------------
 local TrollTab = Window:MakeTab({
     Name = "🤡 Troll",
@@ -44,13 +18,11 @@ local TrollTab = Window:MakeTab({
     PremiumOnly = false
 })
 
--- Adiciona uma seção para controle de jogadores na aba Troll
 TrollTab:AddSection({
     Name = "Controle de Jogadores"
 })
 
 local selectedPlayer = ""
-local isSpectating = false  -- Variável para controlar o espectar
 
 -- Campo de entrada para o nome do jogador
 TrollTab:AddTextbox({
@@ -90,20 +62,10 @@ local function spectatePlayer(targetUsername)
     if targetPlayer and targetPlayer.Character then
         local camera = game.Workspace.CurrentCamera
         camera.CameraSubject = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
-        isSpectating = true
     end
 end
 
--- Função para despectar (retornar a câmera para o jogador original)
-local function despectatePlayer()
-    local players = game:GetService("Players")
-    local localPlayer = players.LocalPlayer
-    local camera = game.Workspace.CurrentCamera
-    camera.CameraSubject = localPlayer.Character:FindFirstChildOfClass("Humanoid")
-    isSpectating = false
-end
-
--- Botão para teleportar todos os jogadores para o jogador
+-- Botão para teleportar todos os jogadores
 TrollTab:AddButton({
     Name = "Teleportar Todos 🏃‍♂️",
     Callback = function()
@@ -117,16 +79,6 @@ TrollTab:AddButton({
     Callback = function()
         if selectedPlayer ~= "" then
             spectatePlayer(selectedPlayer)
-        end
-    end
-})
-
--- Botão para despectar (voltar para o jogador original)
-TrollTab:AddButton({
-    Name = "Despectar 🚶‍♂️",
-    Callback = function()
-        if isSpectating then
-            despectatePlayer()
         end
     end
 })
