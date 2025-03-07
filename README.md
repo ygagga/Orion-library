@@ -226,7 +226,7 @@ ScriptsSection:AddButton({
     Description = "Ativa o Fly script.",
     Callback = function()
         print("Fly Script Ativado!")
-        -- Código para ativar o Fly script
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/mikeexc/Dsc-Mike-Fly-Gui/main/Fly%20Gui"))()
     end
 })
 
