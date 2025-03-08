@@ -17,44 +17,14 @@ local PlayerTab = Window:MakeTab({
 })
 
 
-PlayerTab:AddSection({
+TesteTab:AddSection({
     Name = "TesteTab"
 })
 
-
-PlayerTab:AddSlider({
-
-	Name = "WalkSpeed",
-
-	Min = Lowest Speed,
-	Max = Your Speed Maxed,
-	Default = 5,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "WS",
+TesteTab:AddToggle({
+	Name = "This is a toggle!",
+	Default = false,
 	Callback = function(Value)
-		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
 	end    
 })
-	
-	
-	TesteTab:AddSection({
-    Name = "TesteTab"
-})
-
-Tab:AddSlider({
-
-	Name = "Jump Height",
-
-	Min = Lowest Speed,
-	Max = Your Speed Maxed,
-	Default = 5,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "Height",
-	Callback = function(Value)
-		game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
-	end    
-})
-
-
