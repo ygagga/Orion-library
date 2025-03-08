@@ -1,175 +1,164 @@
--- Carregar a Orion Library
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+-- Carrega a Orion Library
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
 
--- Criar a janela principal
+-- Cria a janela principal
 local Window = OrionLib:MakeWindow({
-    Name = "Brookhaven Troll Hub 🤡",
+    Name = "Brookhaven Troll Hub",
     HidePremium = false,
     SaveConfig = true,
-    ConfigFolder = "TrollHubConfig"
+    ConfigFolder = "OrionTest"
 })
 
--- Criar as abas
-local TrollTab = Window:MakeTab({ Name = "🤡 Troll", Icon = "rbxassetid://4483345998" })
-local HacksTab = Window:MakeTab({ Name = "⚡ Hacks", Icon = "rbxassetid://4483345998" })
-local ScriptsTab = Window:MakeTab({ Name = "🛠️ Scripts", Icon = "rbxassetid://4483345998" })
+-- Cria as abas
+local MainTab = Window:MakeTab({Name = "Principal", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local PlayerTab = Window:MakeTab({Name = "Jogadores", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local ScriptsTab = Window:MakeTab({Name = "Scripts", Icon = "rbxassetid://4483345998", PremiumOnly = false})
 
--- Variáveis
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local selectedPlayer = nil
-local playerList = {}
-
--- Função para atualizar a lista de jogadores
-local function UpdatePlayerList()
-    playerList = {}
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            table.insert(playerList, player.Name)
-        end
+-- Função para ativar/desativar ESP
+local espEnabled = false
+local function toggleESP(state)
+    espEnabled = state
+    if espEnabled then
+        print("ESP ativado")
+        -- Código para ativar ESP aqui
+    else
+        print("ESP desativado")
+        -- Código para desativar ESP aqui
     end
-    OrionLib:MakeNotification({
-        Name = "Lista Atualizada!",
-        Content = "A lista de jogadores foi atualizada.",
-        Image = "rbxassetid://4483345998",
-        Time = 3
-    })
 end
 
--- Atualizar a lista de jogadores ao iniciar
-UpdatePlayerList()
+-- Toggle para ESP
+MainTab:AddToggle({
+    Name = "Ativar ESP",
+    Default = false,
+    Callback = function(value)
+        toggleESP(value)
+    end
+})
 
--- Dropdown para selecionar um jogador
-local Dropdown = TrollTab:AddDropdown({
+-- Atualizar a lista de jogadores
+local playerList = {}
+local function updatePlayers()
+    playerList = {}
+    for _, player in pairs(game.Players:GetPlayers()) do
+        table.insert(playerList, player.Name)
+    end
+end
+
+updatePlayers()
+
+-- Dropdown para selecionar jogador
+local selectedPlayer
+PlayerTab:AddDropdown({
     Name = "Selecionar Jogador",
     Default = "",
     Options = playerList,
-    Callback = function(Value)
-        selectedPlayer = Players:FindFirstChild(Value)
+    Callback = function(value)
+        selectedPlayer = value
+        print("Selecionado:", value)
     end
 })
 
 -- Botão para atualizar a lista de jogadores
-TrollTab:AddButton({
-    Name = "🔄 Atualizar Lista de Jogadores",
+PlayerTab:AddButton({
+    Name = "Atualizar Jogadores",
     Callback = function()
-        UpdatePlayerList()
-        Dropdown:Refresh(playerList, true)
+        updatePlayers()
+        OrionLib:MakeNotification({Name = "Atualizado", Content = "Lista de jogadores atualizada!", Time = 2})
     end
 })
 
--- ESP Toggle
-TrollTab:AddToggle({
-    Name = "Ativar ESP",
-    Default = false,
-    Callback = function(State)
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                if State then
-                    if not player.Character:FindFirstChild("ESP") then
-                        local highlight = Instance.new("Highlight")
-                        highlight.Name = "ESP"
-                        highlight.Adornee = player.Character
-                        highlight.Parent = player.Character
-                    end
-                else
-                    if player.Character:FindFirstChild("ESP") then
-                        player.Character:FindFirstChild("ESP"):Destroy()
-                    end
-                end
+-- Função para teleportar para o jogador
+local function teleportToPlayer()
+    if selectedPlayer then
+        local target = game.Players:FindFirstChild(selectedPlayer)
+        if target and target.Character and game.Players.LocalPlayer.Character then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame
+            print("Teleportado para", selectedPlayer)
+        end
+    end
+end
+
+-- Botão para teleportar para o jogador selecionado
+PlayerTab:AddButton({
+    Name = "Teleportar para o jogador",
+    Callback = function()
+        teleportToPlayer()
+    end
+})
+
+-- Função para spectar jogador
+local function spectatePlayer()
+    if selectedPlayer then
+        local target = game.Players:FindFirstChild(selectedPlayer)
+        if target and target.Character then
+            game.Workspace.Camera.CameraSubject = target.Character.Humanoid
+            print("Spectando", selectedPlayer)
+        end
+    end
+end
+
+-- Botão para spectar jogador selecionado
+PlayerTab:AddButton({
+    Name = "Spectar Jogador",
+    Callback = function()
+        spectatePlayer()
+    end
+})
+
+-- Botão para parar de spectar
+PlayerTab:AddButton({
+    Name = "Parar de Spectar",
+    Callback = function()
+        game.Workspace.Camera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+        print("Parou de spectar")
+    end
+})
+
+-- Função para teleportar todos os jogadores para você
+local function teleportAllPlayers()
+    local localPlayer = game.Players.LocalPlayer
+    if localPlayer.Character then
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player ~= localPlayer and player.Character then
+                player.Character.HumanoidRootPart.CFrame = localPlayer.Character.HumanoidRootPart.CFrame
             end
         end
+        print("Todos os jogadores foram teleportados para você")
+    end
+end
+
+-- Botão para teleportar todos os jogadores para você
+PlayerTab:AddButton({
+    Name = "Teleportar Todos para Mim",
+    Callback = function()
+        teleportAllPlayers()
     end
 })
 
--- Teleportar para o jogador selecionado
-TrollTab:AddButton({
-    Name = "Teleportar para o Jogador",
+-- Botão para executar RAEL Hub
+ScriptsTab:AddButton({
+    Name = "Executar RAEL Hub",
     Callback = function()
-        if selectedPlayer and selectedPlayer.Character and LocalPlayer.Character then
-            LocalPlayer.Character.HumanoidRootPart.CFrame = selectedPlayer.Character.HumanoidRootPart.CFrame
-        end
+        loadstring(game:HttpGet("URL_DO_RAEL_HUB_AQUI"))()
     end
 })
 
--- Espectar jogador
-TrollTab:AddButton({
-    Name = "Espectar Jogador",
+-- Botão para executar Fly GUI v3
+ScriptsTab:AddButton({
+    Name = "Executar Fly GUI v3",
     Callback = function()
-        if selectedPlayer and selectedPlayer.Character then
-            LocalPlayer.CameraSubject = selectedPlayer.Character:FindFirstChildWhichIsA("Humanoid")
-        end
+        loadstring(game:HttpGet("URL_DO_FLY_GUI_AQUI"))()
     end
 })
 
--- Despectar jogador
-TrollTab:AddButton({
-    Name = "Despectar",
+-- Botão para executar SANDER X
+ScriptsTab:AddButton({
+    Name = "Executar SANDER X",
     Callback = function()
-        LocalPlayer.CameraSubject = LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+        loadstring(game:HttpGet("URL_DO_SANDER_X_AQUI"))()
     end
 })
 
--- Teleportar todos para você
-TrollTab:AddButton({
-    Name = "Teleportar Todos para Você",
-    Callback = function()
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character then
-                player.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
-            end
-        end
-    end
-})
-
--- ⚡ Hacks
-HacksTab:AddButton({
-    Name = "Ativar Super Velocidade ⚡",
-    Callback = function()
-        LocalPlayer.Character.Humanoid.WalkSpeed = 100
-    end
-})
-
-HacksTab:AddButton({
-    Name = "Desativar Velocidade ❌",
-    Callback = function()
-        LocalPlayer.Character.Humanoid.WalkSpeed = 16
-    end
-})
-
-HacksTab:AddButton({
-    Name = "Ativar Pulo Infinito 🦘",
-    Callback = function()
-        game:GetService("UserInputService").JumpRequest:Connect(function()
-            LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end)
-    end
-})
-
-HacksTab:AddButton({
-    Name = "Desativar Pulo Infinito ❌",
-    Callback = function()
-        game:GetService("UserInputService").JumpRequest:Disconnect()
-    end
-})
-
-HacksTab:AddButton({
-    Name = "Ativar Atravessar Paredes 🚪",
-    Callback = function()
-        for _, part in pairs(LocalPlayer.Character:GetChildren()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = false
-            end
-        end
-    end
-})
-
-HacksTab:AddButton({
-    Name = "Desativar Atravessar Paredes ❌",
-    Callback = function()
-        for _, part in pairs(LocalPlayer.Character:GetChildren()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = true
-            end
-
-       
+-- Inicia a UI
+OrionLib:Init()
