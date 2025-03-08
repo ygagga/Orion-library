@@ -33,14 +33,8 @@ TesteTab:AddToggle({
 
 TesteTab:AddButton({
 	Name = "Button!",
-	Callback = function()
-      		local function teleportAllPlayers()
-    local players = game:GetService("Players")
-    local localPlayer = players.LocalPlayer
-    local localHumanoidRootPart = localPlayer.Character:FindFirstChild("HumanoidRootPart")
-
+	Callback = function()	
     if localHumanoidRootPart then
-        -- Teleportando todos os jogadores para a posição do jogador atual
         for _, targetPlayer in pairs(players:GetPlayers()) do
             if targetPlayer.Character and targetPlayer ~= localPlayer then
                 local targetHumanoidRootPart = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
