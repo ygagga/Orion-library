@@ -66,27 +66,52 @@ PlayersTab:AddDropdown({
     end
 })
 
------------------------------------------------------------
--- Funções de Teleporte e Espectar dentro do Callback
------------------------------------------------------------
+-- Função para espectar jogador
+local isSpectating = false
+local function spectatePlayer(targetUsername)
+    local players = game:GetService("Players")
+    local localPlayer = players.LocalPlayer
+    local targetPlayer = players:FindFirstChild(targetUsername)
 
+    if targetPlayer and targetPlayer.Character then
+        local camera = game.Workspace.CurrentCamera
+        camera.CameraSubject = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
+        isSpectating = true
+    end
+end
+
+-- Função para despectar (voltar para o jogador original)
+local function despectatePlayer()
+    local players = game:GetService("Players")
+    local localPlayer = players.LocalPlayer
+    local camera = game.Workspace.CurrentCamera
+    camera.CameraSubject = localPlayer.Character:FindFirstChildOfClass("Humanoid")
+    isSpectating = false
+end
+
+-- Função para teleportar todos os jogadores para o jogador atual
+local function teleportAllPlayers()
+    local players = game:GetService("Players")
+    local localPlayer = players.LocalPlayer
+    local localHumanoidRootPart = localPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+    if localHumanoidRootPart then
+        for _, targetPlayer in pairs(players:GetPlayers()) do
+            if targetPlayer.Character and targetPlayer ~= localPlayer then
+                local targetHumanoidRootPart = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if targetHumanoidRootPart then
+                    targetHumanoidRootPart.CFrame = localHumanoidRootPart.CFrame
+                end
+            end
+        end
+    end
+end
+
+-- Funções de teleportar e espectar no painel
 PlayersTab:AddButton({
     Title = "Espectar Jogador 👀",
     Description = "Veja o que o jogador está fazendo",
     Callback = function()
-        local isSpectating = false
-        local function spectatePlayer(targetUsername)
-            local players = game:GetService("Players")
-            local localPlayer = players.LocalPlayer
-            local targetPlayer = players:FindFirstChild(targetUsername)
-
-            if targetPlayer and targetPlayer.Character then
-                local camera = game.Workspace.CurrentCamera
-                camera.CameraSubject = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
-                isSpectating = true
-            end
-        end
-
         if selectedPlayer ~= "" then
             spectatePlayer(selectedPlayer)
         end
@@ -97,15 +122,6 @@ PlayersTab:AddButton({
     Title = "Despectar 🚶‍♂️",
     Description = "Volte para o seu personagem!",
     Callback = function()
-        local isSpectating = false
-        local function despectatePlayer()
-            local players = game:GetService("Players")
-            local localPlayer = players.LocalPlayer
-            local camera = game.Workspace.CurrentCamera
-            camera.CameraSubject = localPlayer.Character:FindFirstChildOfClass("Humanoid")
-            isSpectating = false
-        end
-        
         if isSpectating then
             despectatePlayer()
         end
@@ -116,23 +132,6 @@ PlayersTab:AddButton({
     Title = "Teleportar Todos 🏃‍♂️",
     Description = "Teleporta todos os jogadores para você!",
     Callback = function()
-        local function teleportAllPlayers()
-            local players = game:GetService("Players")
-            local localPlayer = players.LocalPlayer
-            local localHumanoidRootPart = localPlayer.Character:FindFirstChild("HumanoidRootPart")
-
-            if localHumanoidRootPart then
-                for _, targetPlayer in pairs(players:GetPlayers()) do
-                    if targetPlayer.Character and targetPlayer ~= localPlayer then
-                        local targetHumanoidRootPart = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-                        if targetHumanoidRootPart then
-                            targetHumanoidRootPart.CFrame = localHumanoidRootPart.CFrame
-                        end
-                    end
-                end
-            end
-        end
-
         teleportAllPlayers()
     end
 })
@@ -193,17 +192,5 @@ ScriptsTab:AddButton({
 
 ScriptsTab:AddButton({
     Title = "Fly Gui V3 ✈️",
-    Description = "Carrega a Fly Gui V3.",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-    end
-})
-
-ScriptsTab:AddButton({
-    Title = "Sander X 🛸",
-    Description = "Carrega o Sander X.",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/sXPite
-rXs1111/Sanderxv3.30/main/sanderx3.30'))()
-    end
-})
+    Description
+    
