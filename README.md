@@ -16,6 +16,12 @@ local TrollTab = Window:MakeTab({
     PremiumOnly = false
 })
 
+local SciptTab = Window:MakeTab({
+    Name = "🪐Scipts universais",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
 -----------------------------------------------------------
 -- Funções de Troll: Criando Sections e botões na aba "Trolls"
 -----------------------------------------------------------
@@ -60,35 +66,31 @@ TrollSection:AddButton({
 -----------------------------------------------------------
 -- Funções de Admin: Criando Sections e botões na aba "Admin"
 -----------------------------------------------------------
-local AdminTab = Window:MakeTab({
-    Name = "Admin",
+local SciptTab = Window:MakeTab({
+    Name = "🪐Scipts universais",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
 
-local AdminSection = AdminTab:AddSection({
-    Name = "Funções de Admin"
+local SciptSection = AdminTab:AddSection({
+    Name = "Scipts Universais Abaixo"
 })
 
 -- Função para Banir Jogador
-AdminSection:AddButton({
-    Name = "Banir Jogador",
+SciptSection:AddButton({
+    Name = "Rael hub",
     Callback = function()
-        -- Código para banir jogador
-        print("Jogador Banido!")
-        local targetPlayer = game:GetService("Players"):GetPlayerByName("PlayerName") -- Substitua pelo nome do jogador
-        targetPlayer:Kick("Banido!")
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/Laelmano24/Rael-Hub/main/main.txt"))() 
+        print("Scipt Carregado Com Sucesso!")       
     end
 })
 
 -- Função para Ban Automático
 AdminSection:AddButton({
-    Name = "Aplicar Ban Automático",
+    Name = "Fly Gui🛩️",
     Callback = function()
-        -- Código para banir automaticamente
-        print("Ban Automático Aplicado!")
-        local targetPlayer = game:GetService("Players"):GetPlayerByName("PlayerName") -- Substitua pelo nome do jogador
-        targetPlayer:Kick("Banido automaticamente!")
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/mikeexc/Dsc-Mike-Fly-Gui/main/Fly%20Gui"))()
+        print("Scipt Aplicado!")      
     end
 })
 
