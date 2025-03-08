@@ -1,10 +1,5 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
-local Window = OrionLib:MakeWindow({
-    Name = "Troll Hub",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "TrollHubConfig"
-})
+local Window = OrionLib:MakeWindow({Name = "Troll Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "TrollHubConfig"})
 
 -- Abas
 local TrollTab = Window:MakeTab({
@@ -19,23 +14,12 @@ local PlayerTab = Window:MakeTab({
     PremiumOnly = false
 })
 
-local HacksTab = Window:MakeTab({
-    Name = "Hacks",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-local ScriptsTab = Window:MakeTab({
-    Name = "Scripts",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
 -----------------------------------------------------------
 -- Funções Auxiliares
 -----------------------------------------------------------
 local selectedPlayer = ""
 
+-- Função para teleportar todos os jogadores para o jogador local
 local function teleportAllPlayers()
     local localPlayer = game.Players.LocalPlayer
     local localHRP = localPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -43,12 +27,15 @@ local function teleportAllPlayers()
         for _, player in pairs(game.Players:GetPlayers()) do
             if player.Character and player ~= localPlayer then
                 local targetHRP = player.Character:FindFirstChild("HumanoidRootPart")
-                if targetHRP then targetHRP.CFrame = localHRP.CFrame end
+                if targetHRP then
+                    targetHRP.CFrame = localHRP.CFrame
+                end
             end
         end
     end
 end
 
+-- Função para espectar o jogador selecionado
 local function spectatePlayer(targetUsername)
     local targetPlayer = game.Players:FindFirstChild(targetUsername)
     if targetPlayer and targetPlayer.Character then
@@ -56,18 +43,22 @@ local function spectatePlayer(targetUsername)
     end
 end
 
+-- Função para despectar (voltar para o jogador original)
 local function despectatePlayer()
     local localPlayer = game.Players.LocalPlayer
     game.Workspace.CurrentCamera.CameraSubject = localPlayer.Character:FindFirstChildOfClass("Humanoid")
 end
 
+-- Função para ativar/desativar ESP nos jogadores
 local function toggleESP()
     for _, player in pairs(game.Players:GetPlayers()) do
         if player.Character then
             local character = player.Character
             if character:FindFirstChild("Head") then
                 local esp = character.Head:FindFirstChild("BillboardGui")
-                if esp then esp:Destroy() else
+                if esp then
+                    esp:Destroy()
+                else
                     local newESP = Instance.new("BillboardGui")
                     newESP.Adornee = character.Head
                     newESP.Size = UDim2.new(0, 100, 0, 100)
@@ -128,19 +119,31 @@ TrollTab:AddToggle({
 })
 
 -- Scripts Universais
+local ScriptsTab = Window:MakeTab({
+    Name = "Scripts",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
 ScriptsTab:AddButton({
     Name = "RAEL Hub",
-    Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Laelmano24/Rael-Hub/main/main.txt"))() end
+    Callback = function()
+        print("RAEL Hub Executado")
+    end
 })
 
 ScriptsTab:AddButton({
-    Name = "Fly Gui V3",
-    Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))() end
+    Name = "Fly Gui v3",
+    Callback = function()
+        print("Fly Gui v3 Executado")
+    end
 })
 
 ScriptsTab:AddButton({
-    Name = "Sander X",
-    Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/sXPiterXs1111/Sanderxv3.30/main/sanderx3.30'))() end
+    Name = "SANDER X",
+    Callback = function()
+        print("SANDER X Executado")
+    end
 })
 
 OrionLib:Init()
