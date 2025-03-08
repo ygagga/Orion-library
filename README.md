@@ -3,7 +3,7 @@ local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jen
 
 -- Criando a janela principal da interface
 local Window = OrionLib:MakeWindow({
-    Name = "Troll Hub",
+    Name = "👾Zenith core Hub👾",
     HidePremium = false,
     SaveConfig = true,
     ConfigFolder = "TrollHubConfig"
@@ -34,15 +34,12 @@ TrollSection:AddButton({
     end
 })
 
--- Função para Teleportar Jogador
+-- Função para Teleportar players
 TrollSection:AddButton({
-    Name = "Teleportar Jogador",
+    Name = "Teleportar Todos os players",
     Callback = function()
-        -- Aqui você pode colocar o código para teleportar um jogador
-        local targetPlayer = game:GetService("Players"):GetPlayerByName("PlayerName") -- Substitua pelo nome do jogador
-        local targetCharacter = targetPlayer.Character
-        targetCharacter:MoveTo(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position) -- Teleportando o alvo para o jogador
-        print("Jogador Teleportado!")
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ygagga/SCIPTER-TUBERS93/refs/heads/main/README.md"))()
+       print("Jogadores Teleportados!")
     end
 })
 
