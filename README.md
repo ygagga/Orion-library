@@ -1,44 +1,165 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+-- Carregar a Orion Library
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
-
-local Window = OrionLib:MakeWindow({Name = "Teste", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
-
-
-local TesteTab = Window:MakeTab({
-    Name = "Teste",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
+-- Criar a janela principal
+local Window = OrionLib:MakeWindow({
+    Name = "Brookhaven Troll Hub 🤡",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "TrollHubConfig"
 })
 
-local PlayerTab = Window:MakeTab({
-    Name = "Jogadores",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
+-- Criar as abas
+local TrollTab = Window:MakeTab({ Name = "🤡 Troll", Icon = "rbxassetid://4483345998" })
+local HacksTab = Window:MakeTab({ Name = "⚡ Hacks", Icon = "rbxassetid://4483345998" })
+local ScriptsTab = Window:MakeTab({ Name = "🛠️ Scripts", Icon = "rbxassetid://4483345998" })
+
+-- Variáveis
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local selectedPlayer = nil
+
+-- Atualizar lista de jogadores automaticamente
+function GetPlayerList()
+    local playerList = {}
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            table.insert(playerList, player.Name)
+        end
+    end
+    return playerList
+end
+
+-- Dropdown para selecionar um jogador
+TrollTab:AddDropdown({
+    Name = "Selecionar Jogador",
+    Default = "",
+    Options = GetPlayerList(),
+    Callback = function(Value)
+        selectedPlayer = Players:FindFirstChild(Value)
+    end
 })
 
-
-TesteTab:AddSection({
-    Name = "TesteTab"
+-- ESP Toggle
+TrollTab:AddToggle({
+    Name = "Ativar ESP",
+    Default = false,
+    Callback = function(State)
+        for _, player in pairs(Players:GetPlayers()) do
+            if player.Character then
+                if State then
+                    if not player.Character:FindFirstChild("ESP") then
+                        local highlight = Instance.new("Highlight")
+                        highlight.Name = "ESP"
+                        highlight.Adornee = player.Character
+                        highlight.Parent = player.Character
+                    end
+                else
+                    if player.Character:FindFirstChild("ESP") then
+                        player.Character:FindFirstChild("ESP"):Destroy()
+                    end
+                end
+            end
+        end
+    end
 })
 
-TesteTab:AddToggle({
-	Name = "This is a toggle!",
-	Default = false,
-	Callback = function(Value)
-		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
-	end    
+-- Teleportar para o jogador selecionado
+TrollTab:AddButton({
+    Name = "Teleportar para o Jogador",
+    Callback = function()
+        if selectedPlayer and selectedPlayer.Character and LocalPlayer.Character then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = selectedPlayer.Character.HumanoidRootPart.CFrame
+        end
+    end
 })
 
-
-
-TesteTab:AddButton({
-	Name = "Button!",
-	Callback = function()	
-    if localHumanoidRootPart then
-        for _, targetPlayer in pairs(players:GetPlayers()) do
-            if targetPlayer.Character and targetPlayer ~= localPlayer then
-                local targetHumanoidRootPart = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-                if targetHumanoidRootPart then
-                    targetHumanoidRootPart.CFrame = localHumanoidRootPart.CFrame
-  	end    
+-- Espectar jogador
+TrollTab:AddButton({
+    Name = "Espectar Jogador",
+    Callback = function()
+        if selectedPlayer and selectedPlayer.Character then
+            LocalPlayer.CameraSubject = selectedPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+        end
+    end
 })
+
+-- Despectar jogador
+TrollTab:AddButton({
+    Name = "Despectar",
+    Callback = function()
+        LocalPlayer.CameraSubject = LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+    end
+})
+
+-- Teleportar todos para você
+TrollTab:AddButton({
+    Name = "Teleportar Todos para Você",
+    Callback = function()
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                player.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+            end
+        end
+    end
+})
+
+-- ⚡ Hacks
+HacksTab:AddButton({
+    Name = "Ativar Super Velocidade ⚡",
+    Callback = function()
+        LocalPlayer.Character.Humanoid.WalkSpeed = 100
+    end
+})
+
+HacksTab:AddButton({
+    Name = "Desativar Velocidade ❌",
+    Callback = function()
+        LocalPlayer.Character.Humanoid.WalkSpeed = 16
+    end
+})
+
+HacksTab:AddButton({
+    Name = "Ativar Pulo Infinito 🦘",
+    Callback = function()
+        game:GetService("UserInputService").JumpRequest:Connect(function()
+            LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end)
+    end
+})
+
+HacksTab:AddButton({
+    Name = "Desativar Pulo Infinito ❌",
+    Callback = function()
+        game:GetService("UserInputService").JumpRequest:Disconnect()
+    end
+})
+
+HacksTab:AddButton({
+    Name = "Ativar Atravessar Paredes 🚪",
+    Callback = function()
+        for _, part in pairs(LocalPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+})
+
+HacksTab:AddButton({
+    Name = "Desativar Atravessar Paredes ❌",
+    Callback = function()
+        for _, part in pairs(LocalPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
+        end
+    end
+})
+
+-- 🛠️ Scripts Universais
+ScriptsTab:AddButton({
+    Name = "Carregar RAEL Hub",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Laelmano24/Rael-Hub
+	
