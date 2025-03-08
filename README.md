@@ -36,18 +36,6 @@ PlayerTab:AddSlider({
 		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
 	end    
 })
-
-	Name = "jumppower",
-
-	Min = Lowest Speed,
-	Max = Your Speed Maxed,
-	Default = 5,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "JP",
-	Callback = function(Value)
-		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-	end   })
 	
 	
 	TesteTab:AddSection({
