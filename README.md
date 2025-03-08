@@ -18,25 +18,43 @@ local ScriptsTab = Window:MakeTab({ Name = "🛠️ Scripts", Icon = "rbxassetid
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local selectedPlayer = nil
+local playerList = {}
 
--- Atualizar lista de jogadores automaticamente
-function GetPlayerList()
-    local playerList = {}
+-- Função para atualizar a lista de jogadores
+local function UpdatePlayerList()
+    playerList = {}
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
             table.insert(playerList, player.Name)
         end
     end
-    return playerList
+    OrionLib:MakeNotification({
+        Name = "Lista Atualizada!",
+        Content = "A lista de jogadores foi atualizada.",
+        Image = "rbxassetid://4483345998",
+        Time = 3
+    })
 end
 
+-- Atualizar a lista de jogadores ao iniciar
+UpdatePlayerList()
+
 -- Dropdown para selecionar um jogador
-TrollTab:AddDropdown({
+local Dropdown = TrollTab:AddDropdown({
     Name = "Selecionar Jogador",
     Default = "",
-    Options = GetPlayerList(),
+    Options = playerList,
     Callback = function(Value)
         selectedPlayer = Players:FindFirstChild(Value)
+    end
+})
+
+-- Botão para atualizar a lista de jogadores
+TrollTab:AddButton({
+    Name = "🔄 Atualizar Lista de Jogadores",
+    Callback = function()
+        UpdatePlayerList()
+        Dropdown:Refresh(playerList, true)
     end
 })
 
@@ -153,13 +171,5 @@ HacksTab:AddButton({
             if part:IsA("BasePart") then
                 part.CanCollide = true
             end
-        end
-    end
-})
 
--- 🛠️ Scripts Universais
-ScriptsTab:AddButton({
-    Name = "Carregar RAEL Hub",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Laelmano24/Rael-Hub
-	
+       
