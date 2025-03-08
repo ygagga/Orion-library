@@ -16,12 +16,6 @@ local TrollTab = Window:MakeTab({
     PremiumOnly = false
 })
 
-local SciptTab = Window:MakeTab({
-    Name = "🪐Scipts universais",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
 -----------------------------------------------------------
 -- Funções de Troll: Criando Sections e botões na aba "Trolls"
 -----------------------------------------------------------
