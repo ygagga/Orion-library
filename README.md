@@ -1,84 +1,43 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
-local Window = OrionLib:MakeWindow({Name = "Title of the library", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
-local Tab = Window:MakeTab({
-	Name = "Tab 1",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-OrionLib:MakeNotification({
-	Name = "Title!",
-	Content = "Notification content... what will it say??",
-	Image = "rbxassetid://4483345998",
-	Time = 5
-})
-Tab:AddButton({
-	Name = "Button!",
-	Callback = function()
-      		print("button pressed")
-  	end    
-})
-Tab:AddToggle({
-	Name = "This is a toggle!",
-	Default = false,
-	Callback = function(Value)loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/ESP-Script/main/ESP.lua"))()
-		print(Value)
-	end    
-})
-Tab:AddColorpicker({
-	Name = "Colorpicker",
-	Default = Color3.fromRGB(255, 0, 0),
-	Callback = function(Value)
-		print(Value)
-	end	  
-})
--- ColorPicker:Set(Color3.fromRGB(255,255,255))
-Tab:AddSlider({
-	Name = "Slider",
-	Min = 0,
-	Max = 20,
-	Default = 5,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "bananas",
-	Callback = function(Value)
-		print(Value)
-	end    
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "Teleport Hub",
+   LoadingTitle = "Carregando...",
+   LoadingSubtitle = "by SeuNome",
+   Theme = "Default"
 })
 
- --Slider:Set(2)
- Tab:AddLabel("Label")
---CoolLabel:Set("Label New!")
-Tab:AddParagraph("Paragraph","Paragraph Content")
--- CoolParagraph:Set("Paragraph New!")
+local TeleportTab = Window:CreateTab("Teleport", "globe") -- Ícone de globo
 
-Tab:AddTextbox({
-	Name = "Textbox",
-	Default = "default box input",
-	TextDisappear = true,
-	Callback = function(Value)
-		print(Value)
-	end	  
+local Section = TeleportTab:CreateSection("Selecione um Jogador")
+
+local PlayersList = {} 
+for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+   table.insert(PlayersList, player.Name)
+end
+
+local SelectedPlayer
+
+local PlayerDropdown = TeleportTab:CreateDropdown({
+   Name = "Jogadores",
+   Options = PlayersList,
+   CurrentOption = "",
+   Callback = function(option)
+      SelectedPlayer = option
+   end
 })
 
+local TeleportButton = TeleportTab:CreateButton({
+   Name = "Teleportar",
+   Callback = function()
+      local LocalPlayer = game.Players.LocalPlayer
+      local TargetPlayer = game.Players:FindFirstChild(SelectedPlayer)
 
-Tab:AddBind({
-	Name = "Bind",
-	Default = Enum.KeyCode.E,
-	Hold = false,
-	Callback = function()
-		print("press")
-	end    
+      if TargetPlayer and TargetPlayer.Character and LocalPlayer.Character then
+         LocalPlayer.Character:MoveTo(TargetPlayer.Character:GetPrimaryPartCFrame().Position)
+         Rayfield:Notify({Title = "Sucesso", Content = "Teleportado para "..SelectedPlayer, Duration = 2})
+      else
+         Rayfield:Notify({Title = "Erro", Content = "Jogador inválido", Duration = 2})
+      end
+   end
 })
--- Bind:Set(Enum.KeyCode.E)
-Tab:AddDropdown({
-	Name = "Dropdown",
-	Default = "1",
-	Options = {"1", "2"},
-	Callback = function(Value)
-		print(Value)
-	end    
-})
--- Dropdown:Refresh(List<table>,true)
---Dropdown:Set("dropdown option")
-OrionLib:Init()
--- destroying the interface: OrionLib:Destroy()
