@@ -1,44 +1,84 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
-
-local Window = OrionLib:MakeWindow({
-    Name = "Troll Hub", 
-    HidePremium = false, 
-    SaveConfig = true, 
-    ConfigFolder = "TrollHubCfg", 
-    IntroEnabled = false
+local Window = OrionLib:MakeWindow({Name = "Title of the library", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
+local Tab = Window:MakeTab({
+	Name = "Tab 1",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
 })
-
-local player = game.Players.LocalPlayer
-local targetName = ""
-
--- Função para teleportar
-local function TeleportToPlayer()
-    local targetPlayer = game.Players:FindFirstChild(targetName)
-    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        player.Character:WaitForChild("HumanoidRootPart").CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
-    else
-        print("Jogador não encontrado!")
-    end
-end
-
--- Aba Player
-local PlayerTab = Window:MakeTab({
-    Name = "Player",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
+OrionLib:MakeNotification({
+	Name = "Title!",
+	Content = "Notification content... what will it say??",
+	Image = "rbxassetid://4483345998",
+	Time = 5
 })
-
-PlayerTab:AddButton({
-	Name = "ESP (Q to toggle on and off)",
+Tab:AddButton({
+	Name = "Button!",
 	Callback = function()
-      	loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/ESP-Script/main/ESP.lua"))()
+      		print("button pressed")
   	end    
 })
-
-
-PlayerTab:AddButton({
-	Name = "Fling",
-	Callback = function()
-	    loadstring(game:HttpGet(('https://raw.githubusercontent.com/0Ben1/fe/main/obf_5wpM7bBcOPspmX7lQ3m75SrYNWqxZ858ai3tJdEAId6jSI05IOUB224FQ0VSAswH.lua.txt'),true))()
-  	end    
+Tab:AddToggle({
+	Name = "This is a toggle!",
+	Default = false,
+	Callback = function(Value)loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/ESP-Script/main/ESP.lua"))()
+		print(Value)
+	end    
 })
+Tab:AddColorpicker({
+	Name = "Colorpicker",
+	Default = Color3.fromRGB(255, 0, 0),
+	Callback = function(Value)
+		print(Value)
+	end	  
+})
+-- ColorPicker:Set(Color3.fromRGB(255,255,255))
+Tab:AddSlider({
+	Name = "Slider",
+	Min = 0,
+	Max = 20,
+	Default = 5,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	ValueName = "bananas",
+	Callback = function(Value)
+		print(Value)
+	end    
+})
+
+ --Slider:Set(2)
+ Tab:AddLabel("Label")
+--CoolLabel:Set("Label New!")
+Tab:AddParagraph("Paragraph","Paragraph Content")
+-- CoolParagraph:Set("Paragraph New!")
+
+Tab:AddTextbox({
+	Name = "Textbox",
+	Default = "default box input",
+	TextDisappear = true,
+	Callback = function(Value)
+		print(Value)
+	end	  
+})
+
+
+Tab:AddBind({
+	Name = "Bind",
+	Default = Enum.KeyCode.E,
+	Hold = false,
+	Callback = function()
+		print("press")
+	end    
+})
+-- Bind:Set(Enum.KeyCode.E)
+Tab:AddDropdown({
+	Name = "Dropdown",
+	Default = "1",
+	Options = {"1", "2"},
+	Callback = function(Value)
+		print(Value)
+	end    
+})
+-- Dropdown:Refresh(List<table>,true)
+--Dropdown:Set("dropdown option")
+OrionLib:Init()
+-- destroying the interface: OrionLib:Destroy()
