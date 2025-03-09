@@ -3,17 +3,17 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Criar a Janela Principal
 local Window = Rayfield:CreateWindow({
-   Name = "Troll Hub 🤡 | Brookhaven RP 🏡",
+   Name = "👾ZenithCore👾 | Brookhaven RP 🏡",
    LoadingTitle = "Carregando Troll Hub...",
    LoadingSubtitle = "Preparando ferramentas...",
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = "TrollHub",
+      FolderName = "Zenith Core",
       FileName = "TrollHubSettings"
    },
    Discord = {
       Enabled = false,
-      Invite = "", -- Pode adicionar um convite do Discord se quiser
+      Invite = "https://discord.gg/A269Qwmq",
       RememberJoins = true
    },
    KeySystem = false
@@ -160,6 +160,80 @@ MusicTab:CreateButton({
             globalSound:Stop()
             globalSound:Destroy()
             globalSound = nil
+        end
+    end
+})
+
+
+--------------------------------------
+-- ⚡ ESP (Ver Jogadores + Distância)
+--------------------------------------
+
+HacksTab:CreateSection("ESP - Ver Jogadores")
+
+local espEnabled = false
+local espObjects = {}
+
+local function createESP(player)
+    if player == game.Players.LocalPlayer then return end
+    if not player.Character then return end
+
+    -- Criar Highlight para ESP
+    local highlight = Instance.new("Highlight")
+    highlight.Parent = player.Character
+    highlight.FillColor = Color3.fromRGB(255, 255, 255) -- Branco
+    highlight.FillTransparency = 0.5
+    highlight.OutlineTransparency = 0.1
+
+    -- Criar BillboardGui para mostrar a distância
+    local billboard = Instance.new("BillboardGui")
+    billboard.Parent = player.Character:FindFirstChild("Head") or player.Character.PrimaryPart
+    billboard.Adornee = player.Character:FindFirstChild("Head") or player.Character.PrimaryPart
+    billboard.Size = UDim2.new(0, 100, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 2, 0)
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Parent = billboard
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.TextStrokeTransparency = 0
+    textLabel.TextScaled = true
+    textLabel.Font = Enum.Font.SourceSansBold
+
+    espObjects[player] = {highlight, billboard, textLabel}
+
+    -- Atualizar a distância
+    task.spawn(function()
+        while espEnabled and player.Character and player.Character.PrimaryPart do
+            local distance = (game.Players.LocalPlayer.Character.PrimaryPart.Position - player.Character.PrimaryPart.Position).Magnitude
+            textLabel.Text = string.format("📍 %d Studs", math.floor(distance))
+            task.wait(0.1)
+        end
+    end)
+end
+
+-- Ativar ESP
+HacksTab:CreateToggle({
+    Name = "Ativar ESP 👁️",
+    CurrentValue = false,
+    Callback = function(value)
+        espEnabled = value
+
+        if espEnabled then
+            for _, player in pairs(game.Players:GetPlayers()) do
+                createESP(player)
+            end
+
+            -- Atualizar ESP quando novos jogadores entrarem
+            game.Players.PlayerAdded:Connect(createESP)
+        else
+            -- Remover ESP
+            for _, objects in pairs(espObjects) do
+                if objects[1] then objects[1]:Destroy() end
+                if objects[2] then objects[2]:Destroy() end
+            end
+            espObjects = {}
         end
     end
 })
