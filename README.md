@@ -1,22 +1,22 @@
 -- Carregar a Rayfield Library
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Criando a Interface
+-- Criar a Janela Principal
 local Window = Rayfield:CreateWindow({
-    Name = "👾ZenithCore👾",  -- Alterado o nome para ZenithCore
-    LoadingTitle = "ZenithCore 👾",
-    LoadingSubtitle = "Zoando geral!",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "TrollHub",
-        FileName = "Config"
-    },
-    Discord = {
-        Enabled = false,
-        Invite = "",
-        RememberJoins = true
-    },
-    KeySystem = false
+   Name = "👾ZenithCore👾 | Brookhaven RP 🏡",
+   LoadingTitle = "Carregando Zenith Core...",
+   LoadingSubtitle = "Preparando ferramentas...",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "Rayfield",
+      FileName = "TrollHubSettings"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "https://discord.gg/A269Qwmq",
+      RememberJoins = true
+   },
+   KeySystem = false
 })
 
 -- Criar as Abas (Tabs)
@@ -160,6 +160,36 @@ MusicTab:CreateButton({
             globalSound:Stop()
             globalSound:Destroy()
             globalSound = nil
+        end
+    end
+})
+
+
+
+--------------------------------------
+-- 💻 Aba Hacker (Anti Sit)
+--------------------------------------
+
+HackerTab:CreateSection("Anti Sit (Desativar/Sentado)")
+
+local antiSitEnabled = false  -- Valor inicial para Anti Sit
+
+-- Toggle para ativar/desativar Anti Sit
+HackerTab:CreateToggle({
+    Name = "Ativar/Desativar Anti Sit 🚫",
+    CurrentValue = false,
+    Callback = function(value)
+        antiSitEnabled = value
+        if antiSitEnabled then
+            -- Impede o jogador de se sentar
+            game.Players.LocalPlayer.Character.Humanoid.Sit = false
+            -- Bloqueia a capacidade de sentar durante o jogo
+            game.Players.LocalPlayer.Character.Humanoid.Seated:Connect(function()
+                game.Players.LocalPlayer.Character.Humanoid.Sit = false
+            end)
+        else
+            -- Restaura a habilidade de sentar quando desativado
+            game.Players.LocalPlayer.Character.Humanoid.Sit = false
         end
     end
 })
