@@ -28,20 +28,17 @@ local PlayerTab = Window:MakeTab({
     PremiumOnly = false
 })
 
-PlayerTab:AddTextbox({
-    Name = "Nome do Alvo",
-    Default = "",
-    TextDisappear = true,
-    Callback = function(value)
-        targetName = value
-    end  
+PlayerTab:AddButton({
+	Name = "ESP (Q to toggle on and off)",
+	Callback = function()
+      	loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/ESP-Script/main/ESP.lua"))()
+  	end    
 })
+
 
 PlayerTab:AddButton({
-    Name = "Teleportar",
-    Callback = function()
-        TeleportToPlayer()
-    end  
+	Name = "Fling",
+	Callback = function()
+	    loadstring(game:HttpGet(('https://raw.githubusercontent.com/0Ben1/fe/main/obf_5wpM7bBcOPspmX7lQ3m75SrYNWqxZ858ai3tJdEAId6jSI05IOUB224FQ0VSAswH.lua.txt'),true))()
+  	end    
 })
-
-OrionLib:Init()
