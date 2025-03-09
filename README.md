@@ -4,11 +4,11 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 -- Criar a Janela Principal
 local Window = Rayfield:CreateWindow({
    Name = "👾ZenithCore👾 | Brookhaven RP 🏡",
-   LoadingTitle = "Carregando Troll Hub...",
+   LoadingTitle = "Carregando Zenith Core...",
    LoadingSubtitle = "Preparando ferramentas...",
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = "Zenith Core",
+      FolderName = "Rayfield",
       FileName = "TrollHubSettings"
    },
    Discord = {
