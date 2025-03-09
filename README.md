@@ -81,78 +81,89 @@ TrollTab:CreateButton({
    end
 })
 
------------------------------------------------------------
--- 🎶 MÚSICA (Tocar ID de Música)
------------------------------------------------------------
-MusicTab:CreateSection("Reproduzir Música")
 
-local musicId = ""
-local loopMusic = false
+--------------------------------------
+-- 🎶 Aba Música (Tocar para Todos)
+--------------------------------------
 
-MusicTab:CreateInput({
-   Name = "ID da Música",
-   PlaceholderText = "Digite o ID da música",
-   RemoveTextAfterFocusLost = false,
-   Callback = function(value)
-      musicId = value
-   end
-})
+MusicTab:CreateSection("Escolha sua Música")
 
+local globalMusicId = ""
+local globalSound
+local isLoopEnabled = false  -- Toggle para loop
+
+-- Toggle para ativar/desativar loop
 MusicTab:CreateToggle({
-   Name = "Loop",
-   Default = false,
-   Callback = function(value)
-      loopMusic = value
-   end
+    Name = "Tocar em Loop 🔁",
+    CurrentValue = false,
+    Callback = function(value)
+        isLoopEnabled = value
+    end
 })
 
+-- Campo para inserir ID da música global
+MusicTab:CreateInput({
+    Name = "ID da Música Global",
+    PlaceholderText = "Digite o ID...",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(value)
+        globalMusicId = value
+    end
+})
+
+-- IDs prontos para facilitar
+local musicIds = {
+    ["🎵 Música 1"] = "6454199333",
+    ["🎵 Música 2"] = "6427245762",
+    ["🎵 Música 3"] = "6489326185",
+    ["🎵 Música 4"] = "6433157341",
+    ["🎵 Música 5"] = "6436089393",
+    ["🎵 Música 6"] = "18841894272",
+    ["🎵 Música 7"] = "16190784547"
+}
+
+-- Criar botões para tocar músicas prontas globalmente
+for name, id in pairs(musicIds) do
+    MusicTab:CreateButton({
+        Name = name,
+        Callback = function()
+            if globalSound then globalSound:Destroy() end
+            globalSound = Instance.new("Sound", game.Workspace)
+            globalSound.SoundId = "rbxassetid://" .. id
+            globalSound.Volume = 10
+            globalSound.Looped = isLoopEnabled  -- Aplica a escolha do loop
+            globalSound:Play()
+        end
+    })
+end
+
+-- Botão para tocar a música globalmente com ID personalizado
 MusicTab:CreateButton({
-   Name = "Reproduzir Música 🎶",
-   Callback = function()
-      if musicId ~= "" then
-         local sound = Instance.new("Sound", game.Workspace)
-         sound.SoundId = "rbxassetid://" .. musicId
-         sound.Looped = loopMusic
-         sound.Volume = 1
-         sound:Play()
-      end
-   end
+    Name = "Tocar ID Personalizado 📢",
+    Callback = function()
+        if globalMusicId ~= "" then
+            if globalSound then globalSound:Destroy() end
+            globalSound = Instance.new("Sound", game.Workspace)
+            globalSound.SoundId = "rbxassetid://" .. globalMusicId
+            globalSound.Volume = 10
+            globalSound.Looped = isLoopEnabled  -- Aplica a escolha do loop
+            globalSound:Play()
+        end
+    end
 })
 
------------------------------------------------------------
--- ⚡ HACKS (Super Velocidade e Pulo Infinito)
------------------------------------------------------------
-HacksTab:CreateSection("Superpoderes!")
-
-HacksTab:CreateButton({
-   Name = "Ativar Super Velocidade ⚡",
-   Callback = function()
-      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
-   end
+-- Botão para parar a música global
+MusicTab:CreateButton({
+    Name = "Parar Música Global ⛔",
+    Callback = function()
+        if globalSound then
+            globalSound:Stop()
+            globalSound:Destroy()
+            globalSound = nil
+        end
+    end
 })
 
-HacksTab:CreateButton({
-   Name = "Desativar Velocidade ❌",
-   Callback = function()
-      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-   end
-})
-
-HacksTab:CreateButton({
-   Name = "Ativar Pulo Infinito 🦘",
-   Callback = function()
-      game:GetService("UserInputService").JumpRequest:Connect(function()
-         game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-      end)
-   end
-})
-
-HacksTab:CreateButton({
-   Name = "Desativar Pulo Infinito ❌",
-   Callback = function()
-      game:GetService("UserInputService").JumpRequest:Disconnect()
-   end
-})
 
 -----------------------------------------------------------
 -- 🧑‍💻 SCRIPTS (Executar Scripts Extras)
