@@ -1,22 +1,22 @@
 -- Carregar a Rayfield Library
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Criar a Janela Principal
+-- Criando a Interface
 local Window = Rayfield:CreateWindow({
-   Name = "👾ZenithCore👾 | Brookhaven RP 🏡",
-   LoadingTitle = "Carregando Zenith Core...",
-   LoadingSubtitle = "Preparando ferramentas...",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "Rayfield",
-      FileName = "TrollHubSettings"
-   },
-   Discord = {
-      Enabled = false,
-      Invite = "https://discord.gg/A269Qwmq",
-      RememberJoins = true
-   },
-   KeySystem = false
+    Name = "👾ZenithCore👾",  -- Alterado o nome para ZenithCore
+    LoadingTitle = "ZenithCore 👾",
+    LoadingSubtitle = "Zoando geral!",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "TrollHub",
+        FileName = "Config"
+    },
+    Discord = {
+        Enabled = false,
+        Invite = "",
+        RememberJoins = true
+    },
+    KeySystem = false
 })
 
 -- Criar as Abas (Tabs)
