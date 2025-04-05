@@ -1,235 +1,186 @@
--- Carregar a Rayfield Library
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- Código otimizado da biblioteca OrionLib
 
--- Criando a Interface
-local Window = Rayfield:CreateWindow({
-    Name = "👾ZenithCore👾",  -- Nome alterado para ZenithCore
-    LoadingTitle = "ZenithCore 👾",
-    LoadingSubtitle = "Zoando geral!",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "TrollHub",
-        FileName = "Config"
-    },
-    Discord = {
-        Enabled = false,
-        Invite = "",
-        RememberJoins = true
-    },
-    KeySystem = false
-})
+-- Serviços local Services = { UserInputService = game:GetService("UserInputService"), TweenService = game:GetService("TweenService"), RunService = game:GetService("RunService"), Players = game:GetService("Players"), HttpService = game:GetService("HttpService") }
 
+local LocalPlayer = Services.Players.LocalPlayer local Mouse = LocalPlayer:GetMouse()
 
--- Criar as Abas (Tabs)
-local TrollTab = Window:CreateTab("Troll", 4483362458) -- Ícone de palhaço
-local MusicTab = Window:CreateTab("Música", 6034509993) -- Ícone de música
-local HacksTab = Window:CreateTab("Hacks", 6034509993) -- Ícone de raio
-local ScriptsTab = Window:CreateTab("Scripts", 6034509973) -- Ícone de código
-local AboutTab = Window:CreateTab("Sobre", 6034509992) -- Ícone de info
+-- OrionLib local OrionLib = { Elements = {}, ThemeObjects = {}, Connections = {}, Flags = {}, Themes = { Default = { Main = Color3.fromRGB(25, 25, 25), Second = Color3.fromRGB(32, 32, 32), Stroke = Color3.fromRGB(60, 60, 60), Divider = Color3.fromRGB(60, 60, 60), Text = Color3.fromRGB(240, 240, 240), TextDark = Color3.fromRGB(150, 150, 150) } }, SelectedTheme = "Default", Folder = nil, SaveCfg = false }
 
------------------------------------------------------------
--- 🤡 TROLL (Teleportar, Espectar, Matar)
------------------------------------------------------------
-TrollTab:CreateSection("Controle de Jogadores")
+-- Feather Icons local Icons = {} local success, result = pcall(function() Icons = Services.HttpService:JSONDecode(game:HttpGet("https://raw.githubusercontent.com/evoincorp/lucideblox/master/src/modules/util/icons.json")).icons end) if not success then warn("Orion Library - Failed to load icons: " .. result) end local function GetIcon(name) return Icons[name] end
 
-local selectedPlayer = ""
+-- GUI principal local Orion = Instance.new("ScreenGui") Orion.Name = "Orion" if syn then syn.protect_gui(Orion) end Orion.Parent = gethui and gethui() or game.CoreGui
 
-TrollTab:CreateInput({
-   Name = "Nome do Jogador",
-   PlaceholderText = "Digite o nome do jogador",
-   RemoveTextAfterFocusLost = true,
-   Callback = function(value)
-      selectedPlayer = value
-   end
-})
+-- Remover interfaces duplicadas local function RemoveDuplicates() local parent = gethui and gethui() or game.CoreGui for _, ui in ipairs(parent:GetChildren()) do if ui.Name == Orion.Name and ui ~= Orion then ui:Destroy() end end end RemoveDuplicates()
 
-TrollTab:CreateButton({
-   Name = "Teleportar Todos para Mim",
-   Callback = function()
-      local players = game:GetService("Players")
-      local localPlayer = players.LocalPlayer
-      local root = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
+function OrionLib:IsRunning() return Orion.Parent == (gethui and gethui() or game.CoreGui) end
 
-      if root then
-         for _, target in pairs(players:GetPlayers()) do
-            if target.Character and target ~= localPlayer then
-               local targetRoot = target.Character:FindFirstChild("HumanoidRootPart")
-               if targetRoot then
-                  targetRoot.CFrame = root.CFrame
-               end
-            end
-         end
-      end
-   end
-})
+-- Conexões local function AddConnection(signal, func) if not OrionLib:IsRunning() then return end local connection = signal:Connect(func) table.insert(OrionLib.Connections, connection) return connection end
 
-TrollTab:CreateButton({
-   Name = "Espectar Jogador",
-   Callback = function()
-      local players = game:GetService("Players")
-      local target = players:FindFirstChild(selectedPlayer)
+-- Finalizar conexões ao encerrar Services.RunService.Heartbeat:Connect(function() if not OrionLib:IsRunning() then for _, conn in pairs(OrionLib.Connections) do conn:Disconnect() end end end)
 
-      if target and target.Character then
-         game.Workspace.CurrentCamera.CameraSubject = target.Character:FindFirstChildOfClass("Humanoid")
-      end
-   end
-})
+-- Função de arrastar local function EnableDragging(dragPoint, mainFrame) local dragging, dragInput, startPos, framePos = false dragPoint.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true startPos, framePos = input.Position, mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end) dragPoint.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end end) Services.UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - startPos Services.TweenService:Create(mainFrame, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y) }):Play() end end) end
 
-TrollTab:CreateButton({
-   Name = "Parar de Espectar",
-   Callback = function()
-      game.Workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-   end
-})
+-- Utilitários local function Create(class, props, children) local obj = Instance.new(class) for k, v in pairs(props or {}) do obj[k] = v end for _, child in pairs(children or {}) do child.Parent = obj end return obj end
 
+local function AddThemeObject(obj, themeKey) OrionLib.ThemeObjects[themeKey] = OrionLib.ThemeObjects[themeKey] or {} table.insert(OrionLib.ThemeObjects[themeKey], obj) obj[ReturnProperty(obj)] = OrionLib.Themes[OrionLib.SelectedTheme][themeKey] return obj end
 
---------------------------------------
--- 🎶 Aba Música (Tocar para Todos)
---------------------------------------
+local function ReturnProperty(obj) local class = obj.ClassName return class == "Frame" or class == "TextButton" and "BackgroundColor3" or class == "ScrollingFrame" and "ScrollBarImageColor3" or class == "UIStroke" and "Color" or (class == "TextLabel" or class == "TextBox") and "TextColor3" or (class == "ImageLabel" or class == "ImageButton") and "ImageColor3" end
 
-MusicTab:CreateSection("Escolha sua Música")
+-- ORION LIBRARY OTIMIZADA POR RONALDO - VERSÃO REDZ/RAYFIELD STYLE
+local Orion = {}
 
-local globalMusicId = ""
-local globalSound
-local isLoopEnabled = false  -- Toggle para loop
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
--- Toggle para ativar/desativar loop
-MusicTab:CreateToggle({
-    Name = "Tocar em Loop 🔁",
-    CurrentValue = false,
-    Callback = function(value)
-        isLoopEnabled = value
-    end
-})
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- Campo para inserir ID da música global
-MusicTab:CreateInput({
-    Name = "ID da Música Global",
-    PlaceholderText = "Digite o ID...",
-    RemoveTextAfterFocusLost = false,
-    Callback = function(value)
-        globalMusicId = value
-    end
-})
+-- Armazena janelas criadas
+local Windows = {}
 
--- IDs prontos para facilitar
-local musicIds = {
-    ["🎵 Música 1"] = "6454199333",
-    ["🎵 Música 2"] = "6427245762",
-    ["🎵 Música 3"] = "6489326185",
-    ["🎵 Música 4"] = "6433157341",
-    ["🎵 Música 5"] = "6436089393",
-    ["🎵 Música 6"] = "18841894272",
-    ["🎵 Música 7"] = "16190784547"
-}
+-- Função para criar uma nova janela
+function Orion:MakeWindow(cfg)
+	local name = cfg.Name or "Orion Hub"
+	local theme = cfg.Theme or "Dark"
+	local size = cfg.Size or UDim2.new(0, 500, 0, 350)
 
--- Criar botões para tocar músicas prontas globalmente
-for name, id in pairs(musicIds) do
-    MusicTab:CreateButton({
-        Name = name,
-        Callback = function()
-            if globalSound then globalSound:Destroy() end
-            globalSound = Instance.new("Sound", game.Workspace)
-            globalSound.SoundId = "rbxassetid://" .. id
-            globalSound.Volume = 10
-            globalSound.Looped = isLoopEnabled  -- Aplica a escolha do loop
-            globalSound:Play()
-        end
-    })
+	local ScreenGui = Instance.new("ScreenGui", PlayerGui)
+	ScreenGui.Name = name:gsub("%s+", "") .. "UI"
+	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	ScreenGui.ResetOnSpawn = false
+
+	local MainFrame = Instance.new("Frame", ScreenGui)
+	MainFrame.Name = "Main"
+	MainFrame.Size = size
+	MainFrame.Position = UDim2.new(0.5, -size.X.Offset / 2, 0.5, -size.Y.Offset / 2)
+	MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	MainFrame.BorderSizePixel = 0
+	MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+	local UIStroke = Instance.new("UIStroke", MainFrame)
+	UIStroke.Color = Color3.fromRGB(255, 0, 0)
+	UIStroke.Thickness = 2
+
+	local UICorner = Instance.new("UICorner", MainFrame)
+	UICorner.CornerRadius = UDim.new(0, 6)
+
+	-- Título da janela
+	local Title = Instance.new("TextLabel", MainFrame)
+	Title.Text = name
+	Title.Size = UDim2.new(1, 0, 0, 40)
+	Title.BackgroundTransparency = 1
+	Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Title.TextScaled = true
+	Title.Font = Enum.Font.GothamBold
+
+	-- Aba container
+	local TabsHolder = Instance.new("Frame", MainFrame)
+	TabsHolder.Name = "Tabs"
+	TabsHolder.Position = UDim2.new(0, 0, 0, 40)
+	TabsHolder.Size = UDim2.new(1, 0, 1, -40)
+	TabsHolder.BackgroundTransparency = 1
+
+	-- Layout de abas
+	local UIList = Instance.new("UIListLayout", TabsHolder)
+	UIList.FillDirection = Enum.FillDirection.Horizontal
+	UIList.SortOrder = Enum.SortOrder.LayoutOrder
+	UIList.Padding = UDim.new(0, 4)
+
+	-- Armazena funções para manipular a janela
+	local WindowAPI = {}
+
+	function WindowAPI:CreateTab(tabName)
+		local Tab = Instance.new("TextButton", TabsHolder)
+		Tab.Name = tabName
+		Tab.Text = tabName
+		Tab.Size = UDim2.new(0, 100, 0, 30)
+		Tab.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+		Tab.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Tab.Font = Enum.Font.Gotham
+		Tab.TextScaled = true
+
+		local TabCorner = Instance.new("UICorner", Tab)
+		TabCorner.CornerRadius = UDim.new(0, 4)
+
+		local Page = Instance.new("ScrollingFrame", MainFrame)
+		Page.Name = tabName .. "Page"
+		Page.Size = UDim2.new(1, -10, 1, -80)
+		Page.Position = UDim2.new(0, 5, 0, 75)
+		Page.BackgroundTransparency = 1
+		Page.Visible = false
+		Page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		Page.CanvasSize = UDim2.new(0, 0, 0, 0)
+		Page.ScrollBarThickness = 5
+
+		local ListLayout = Instance.new("UIListLayout", Page)
+		ListLayout.Padding = UDim.new(0, 6)
+		ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+		-- Trocar de aba
+		Tab.MouseButton1Click:Connect(function()
+			for _, child in pairs(MainFrame:GetChildren()) do
+				if child:IsA("ScrollingFrame") then
+					child.Visible = false
+				end
+			end
+			Page.Visible = true
+		end)
+
+		local TabAPI = {}
+
+		function TabAPI:AddLabel(text)
+			local Label = Instance.new("TextLabel", Page)
+			Label.Text = text
+			Label.Size = UDim2.new(1, -10, 0, 30)
+			Label.BackgroundTransparency = 1
+			Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Label.Font = Enum.Font.GothamSemibold
+			Label.TextScaled = true
+		end
+
+		function TabAPI:AddButton(text, callback)
+			local Button = Instance.new("TextButton", Page)
+			Button.Text = text
+			Button.Size = UDim2.new(1, -10, 0, 35)
+			Button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+			Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Button.Font = Enum.Font.GothamBold
+			Button.TextScaled = true
+
+			local Corner = Instance.new("UICorner", Button)
+			Corner.CornerRadius = UDim.new(0, 6)
+
+			Button.MouseButton1Click:Connect(function()
+				pcall(callback)
+			end)
+		end
+
+		function TabAPI:AddToggle(text, callback)
+			local Toggle = Instance.new("TextButton", Page)
+			Toggle.Text = text .. " [OFF]"
+			Toggle.Size = UDim2.new(1, -10, 0, 35)
+			Toggle.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+			Toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Toggle.Font = Enum.Font.Gotham
+			Toggle.TextScaled = true
+
+			local Corner = Instance.new("UICorner", Toggle)
+			Corner.CornerRadius = UDim.new(0, 6)
+
+			local state = false
+
+			Toggle.MouseButton1Click:Connect(function()
+				state = not state
+				Toggle.Text = text .. (state and " [ON]" or " [OFF]")
+				pcall(callback, state)
+			end)
+		end
+
+		return TabAPI
+	end
+
+	return WindowAPI
 end
 
--- Botão para tocar a música globalmente com ID personalizado
-MusicTab:CreateButton({
-    Name = "Tocar ID Personalizado 📢",
-    Callback = function()
-        if globalMusicId ~= "" then
-            if globalSound then globalSound:Destroy() end
-            globalSound = Instance.new("Sound", game.Workspace)
-            globalSound.SoundId = "rbxassetid://" .. globalMusicId
-            globalSound.Volume = 10
-            globalSound.Looped = isLoopEnabled  -- Aplica a escolha do loop
-            globalSound:Play()
-        end
-    end
-})
-
--- Botão para parar a música global
-MusicTab:CreateButton({
-    Name = "Parar Música Global ⛔",
-    Callback = function()
-        if globalSound then
-            globalSound:Stop()
-            globalSound:Destroy()
-            globalSound = nil
-        end
-    end
-})
-
-
-
---------------------------------------
--- 💻 Aba Hacker (Anti Sit)
---------------------------------------
-
-HackerTab:CreateSection("Anti Sit (Desativar/Sentado)")
-
-local antiSitEnabled = false  -- Valor inicial para Anti Sit
-
--- Toggle para ativar/desativar Anti Sit
-HackerTab:CreateToggle({
-    Name = "Ativar/Desativar Anti Sit 🚫",
-    CurrentValue = false,
-    Callback = function(value)
-        antiSitEnabled = value
-        if antiSitEnabled then
-            -- Impede o jogador de se sentar
-            game.Players.LocalPlayer.Character.Humanoid.Sit = false
-            -- Bloqueia a capacidade de sentar durante o jogo
-            game.Players.LocalPlayer.Character.Humanoid.Seated:Connect(function()
-                game.Players.LocalPlayer.Character.Humanoid.Sit = false
-            end)
-        else
-            -- Restaura a habilidade de sentar quando desativado
-            game.Players.LocalPlayer.Character.Humanoid.Sit = false
-        end
-    end
-})
-
-
------------------------------------------------------------
--- 🧑‍💻 SCRIPTS (Executar Scripts Extras)
------------------------------------------------------------
-ScriptsTab:CreateSection("Executar Scripts")
-
-ScriptsTab:CreateButton({
-   Name = "Fly Script ✈️",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-   end
-})
-
-ScriptsTab:CreateButton({
-   Name = "RAEL Hub 🔧",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/Laelmano24/Rael-Hub/main/main.txt"))()
-   end
-})
-
-ScriptsTab:CreateButton({
-   Name = "Sander X 🛸",
-   Callback = function()
-      loadstring(game:HttpGet('https://raw.githubusercontent.com/sXPiterXs1111/Sanderxv3.30/main/sanderx3.30'))()
-   end
-})
-
------------------------------------------------------------
--- ℹ️ SOBRE
------------------------------------------------------------
-AboutTab:CreateSection("Criado por Shelby, user discord: snobodj")
-
-AboutTab:CreateParagraph({
-   Title = "Troll Hub 🤡",
-   Content = "Criado para trollar no Brookhaven RP! Divirta-se!"
-})
-
-Rayfield:LoadConfiguration()
+return Orion
